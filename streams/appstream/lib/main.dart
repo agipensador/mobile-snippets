@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 void main() {
@@ -28,9 +30,11 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   Stream<int>? intStream;
+  StreamSubscription? subscription;
+
   Stream<int> getIntStream(Duration duration) async* {
     int i = 0;
-    while (i <= 5) {
+    while (i <= 50) {
       i++;
       await Future.delayed(duration);
       yield i;
@@ -41,6 +45,15 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     intStream = getIntStream(const Duration(seconds: 1));
+    // intStream?.listen(print);
+    subscription = intStream?.listen(print);
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    subscription?.cancel();
+    super.dispose();
   }
 
   @override
@@ -50,21 +63,24 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              StreamBuilder<int>(
-                  initialData: 0,
-                  stream: intStream,
-                  builder: (context, snapshot) {
-                    print('runing builder');
-                    return Text(
-                      snapshot.data.toString(),
-                      style: const TextStyle(fontSize: 60),
-                    );
-                  })
+              // StreamBuilder<int>(
+              //     initialData: 0,
+              //     stream: intStream,
+              //     builder: (context, snapshot) {
+              //       print('runing builder');
+              //       return Text(
+              //         snapshot.data.toString(),
+              //         style: const TextStyle(fontSize: 60),
+              //       );
+              //     })
             ],
           ),
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.of(context)
+                .pushReplacement(MaterialPageRoute(builder: (_) => Scaffold()));
+          },
           child: const Icon(Icons.add),
         ));
   }
